@@ -33,3 +33,19 @@ Sometimes skimming data is neat?
 skimr::skim(litters_df)
 ```
 
+## Fix the missingness 
+
+```{r}
+litters_df =
+    read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".", "")) #This will change the "." to NA to keep consistency. 
+```
+
+## Import the FAS_pups dataset. 
+
+```{r}
+pups_df = 
+  read_csv("data_import_examples/FAS_pups.csv", 
+          skip = 3, #Skip first three rows since empty 
+          na = c("NA", ".", ""))
+```
+
