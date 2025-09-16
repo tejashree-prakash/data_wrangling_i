@@ -16,6 +16,11 @@ library(tidyverse)
     ## ✖ dplyr::lag()    masks stats::lag()
     ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
+``` r
+library(readxl)
+library(haven)
+```
+
 Let’s import a dataset.
 
 ``` r
@@ -111,7 +116,7 @@ Data summary
 | pups_dead_birth |         0 |             1 |  0.33 | 0.75 |   0 |   0 |   0 |   0 |    4 | ▇▂▁▁▁ |
 | pups_survive    |         0 |             1 |  6.41 | 2.05 |   1 |   5 |   7 |   8 |    9 | ▁▃▂▇▇ |
 
-## Fix the missingness
+## Fix the missingness (using two hashtags to make font of this title bigger)
 
 ``` r
 litters_df =
@@ -144,3 +149,67 @@ pups_df =
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+#Clean names
+pups_df = 
+  janitor::clean_names(pups_df)
+names(pups_df)
+```
+
+    ## [1] "litter_number" "sex"           "pd_ears"       "pd_eyes"      
+    ## [5] "pd_pivot"      "pd_walk"
+
+## Okay what about Excel
+
+CSVs are really great but sometimes you get an excel file. Try to use
+CSVs if possible though…
+
+``` r
+mlb_df <-  
+  read_excel("data_import_examples/mlb11.xlsx")
+mlb_df
+```
+
+    ## # A tibble: 30 × 12
+    ##    team        runs at_bats  hits homeruns bat_avg strikeouts stolen_bases  wins
+    ##    <chr>      <dbl>   <dbl> <dbl>    <dbl>   <dbl>      <dbl>        <dbl> <dbl>
+    ##  1 Texas Ran…   855    5659  1599      210   0.283        930          143    96
+    ##  2 Boston Re…   875    5710  1600      203   0.28        1108          102    90
+    ##  3 Detroit T…   787    5563  1540      169   0.277       1143           49    95
+    ##  4 Kansas Ci…   730    5672  1560      129   0.275       1006          153    71
+    ##  5 St. Louis…   762    5532  1513      162   0.273        978           57    90
+    ##  6 New York …   718    5600  1477      108   0.264       1085          130    77
+    ##  7 New York …   867    5518  1452      222   0.263       1138          147    97
+    ##  8 Milwaukee…   721    5447  1422      185   0.261       1083           94    96
+    ##  9 Colorado …   735    5544  1429      163   0.258       1201          118    73
+    ## 10 Houston A…   615    5598  1442       95   0.258       1164          118    56
+    ## # ℹ 20 more rows
+    ## # ℹ 3 more variables: new_onbase <dbl>, new_slug <dbl>, new_obs <dbl>
+
+Now what about when the tables aren’t neatly displayed in Excel and have
+formatting.
+
+Import LOR word counts.
+
+``` r
+fotr_df <- read_excel("data_import_examples/LotR_Words.xlsx", range = "B3:D6") #Specifies the range of which of the three tables we want from the Excel. 
+```
+
+## SAS????
+
+Import the PULSE data.
+
+``` r
+pulse_df <- read_sas("data_import_examples/public_pulse_data.sas7bdat")
+
+pulse_df <- janitor::clean_names(pulse_df)
+```
+
+\##Why do I hate read.csv so much?? It prints worse and doesn’t organize
+it as readable.
+
+``` r
+litters_df_base <- 
+    read.csv("data_import_examples/FAS_litters.csv")
+```

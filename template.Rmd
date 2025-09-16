@@ -5,6 +5,8 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+library(readxl)
+library(haven)
 ```
 
 Let's import a dataset. 
@@ -13,6 +15,7 @@ Let's import a dataset.
 litters_df = 
   read_csv("data_import_examples/FAS_litters.csv") #Don't use read.csv
 ```
+
 Look at your data!
 
 ```{r}
@@ -33,7 +36,7 @@ Sometimes skimming data is neat?
 skimr::skim(litters_df)
 ```
 
-## Fix the missingness 
+## Fix the missingness (using two hashtags to make font of this title bigger)
 
 ```{r}
 litters_df =
@@ -47,5 +50,47 @@ pups_df =
   read_csv("data_import_examples/FAS_pups.csv", 
           skip = 3, #Skip first three rows since empty 
           na = c("NA", ".", ""))
+
+#Clean names
+pups_df = 
+  janitor::clean_names(pups_df)
+names(pups_df)
+```
+
+## Okay what about Excel 
+
+CSVs are really great but sometimes you get an excel file. Try to use CSVs if possible though...
+
+```{r}
+mlb_df <-  
+  read_excel("data_import_examples/mlb11.xlsx")
+mlb_df
+```
+
+Now what about when the tables aren't neatly displayed in Excel and have formatting. 
+
+Import LOR word counts. 
+
+```{r}
+fotr_df <- read_excel("data_import_examples/LotR_Words.xlsx", range = "B3:D6") #Specifies the range of which of the three tables we want from the Excel. 
+```
+
+## SAS????
+
+Import the PULSE data. 
+
+```{r}
+pulse_df <- read_sas("data_import_examples/public_pulse_data.sas7bdat")
+
+pulse_df <- janitor::clean_names(pulse_df)
+```
+
+
+
+##Why do I hate read.csv so much?? It prints worse and doesn't organize it as readable.
+
+```{r, eval=FALSE}
+litters_df_base <- 
+    read.csv("data_import_examples/FAS_litters.csv")
 ```
 
