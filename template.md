@@ -135,10 +135,12 @@ litters_df =
 ## Import the FAS_pups dataset.
 
 ``` r
+#Prefernce is to 
 pups_df = 
   read_csv("data_import_examples/FAS_pups.csv", 
           skip = 3, #Skip first three rows since empty 
-          na = c("NA", ".", ""))
+          na = c("NA", ".", "")
+  )
 ```
 
     ## Rows: 313 Columns: 6
@@ -193,7 +195,9 @@ formatting.
 Import LOR word counts.
 
 ``` r
-fotr_df <- read_excel("data_import_examples/LotR_Words.xlsx", range = "B3:D6") #Specifies the range of which of the three tables we want from the Excel. 
+fotr_df <- 
+  read_excel("data_import_examples/LotR_Words.xlsx", 
+             range = "B3:D6") #Specifies the range of which of the three tables we want from the Excel. 
 ```
 
 ## SAS????
@@ -201,9 +205,11 @@ fotr_df <- read_excel("data_import_examples/LotR_Words.xlsx", range = "B3:D6") #
 Import the PULSE data.
 
 ``` r
-pulse_df <- read_sas("data_import_examples/public_pulse_data.sas7bdat")
+pulse_df <- 
+  read_sas("data_import_examples/public_pulse_data.sas7bdat")
 
-pulse_df <- janitor::clean_names(pulse_df)
+pulse_df <- 
+  janitor::clean_names(pulse_df)
 ```
 
 \##Why do I hate read.csv so much?? It prints worse and doesn’t organize
@@ -212,4 +218,11 @@ it as readable.
 ``` r
 litters_df_base <- 
     read.csv("data_import_examples/FAS_litters.csv")
+```
+
+## What about data exporting?
+
+``` r
+#Saving the df now.
+write_csv(fotr_df, "data_import_examples/fotr_df.csv")
 ```
