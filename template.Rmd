@@ -1,0 +1,35 @@
+---
+title: "Data Import"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+Let's import a dataset. 
+
+```{r}
+litters_df = 
+  read_csv("data_import_examples/FAS_litters.csv") #Don't use read.csv
+```
+Look at your data!
+
+```{r}
+names(litters_df)
+```
+Update the names in 'litters_df'. 
+
+```{r}
+litters_df = 
+  janitor::clean_names(litters_df) #Just want clean_names function from janitor package without loading the whole package
+names(litters_df)
+litters_df
+```
+
+Sometimes skimming data is neat?
+
+```{r}
+skimr::skim(litters_df)
+```
+
