@@ -108,3 +108,76 @@ litters_df_base <-
 write_csv(fotr_df, "data_import_examples/fotr_df.csv")
 ```
 
+
+##Data Manipulation Lecture: 9/18/25
+
+
+Let's import the datasets. 
+
+```{r}
+litters_df =
+    read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".", ""))
+litters_df <- 
+  janitor::clean_names(litters_df)
+
+pups_df = 
+  read_csv("data_import_examples/FAS_pups.csv", skip = 3, na = c("NA", ".", ""))
+pups_df <- 
+  janitor::clean_names(pups_df)
+```
+
+
+## 'select'
+
+'select' selects variables from my dataframe. 
+
+select specific variables 
+
+```{r}
+select(litters_df, group, litter_number, gd0_weight)
+
+```
+
+select a range
+```{r}
+select(litters_df, group:gd_of_birth)
+```
+
+select by removal
+```{r}
+select(litters_df, -group)
+select(litters_df,-(group:gd_of_birth)) #combine removing with a range 
+```
+
+select by prefix
+```{r}
+select(litters_df, group, starts_with("gd")) #select anything that starts with gd
+#also is an 'ends_with' or 'contains'
+```
+
+rearrange by selecting order
+```{r}
+select(litters_df, starts_with("gd"), group) #order listed here is order it'll come out in
+select(litters_df, litter_number, everything())
+
+relocate(litters_df, litter_number)
+```
+
+rename by selecting
+```{r}
+select(litters_df, GROUP = group, everything())
+rename(litters_df, GROUP = group)
+```
+
+what if i only select one variable...?
+```{r}
+select(litters_df, group) #outputs as a df
+
+pull(litters_df, group) #outputs a vector 
+```
+
+learning assessment for pups df
+```{r}
+select(pups_df, litter_number, sex, pd_ears)
+```
+
