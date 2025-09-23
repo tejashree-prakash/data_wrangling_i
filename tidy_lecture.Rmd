@@ -1,0 +1,131 @@
+---
+title: "Tidy data and relational datasets"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(haven)
+```
+
+This document will show how to tidy data. 
+
+## Pivot longer - will use most of the time when reorganizing data. The number of observations in the longer dataset will be double the original.  
+
+```{r}
+pulse_df = 
+  read_sas("data_import_examples/public_pulse_data.sas7bdat") %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    cols = bdi_score_bl:bdi_score_12m, #converted the columns of bdi type to a variable label
+    names_to = "visit",
+    values_to = "bdi_score",
+    names_prefix = "bdi_score_"
+    ) %>% #delete the leading prefix 
+  mutate(visit = replace(visit, visit == "bl", "00m")) %>%
+  relocate(id, visit)
+
+```
+
+Do one more example. 
+
+```{r}
+litters_df =
+  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".", "")) %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    cols = gd0_weight:gd18_weight, #these are repeated observations 
+    names_to = "gd_time",
+    values_to = "weight"
+  ) %>%
+  mutate(gd_time = case_match( #change specific cases to numeric values 
+    gd_time,
+    "gd0_weight" ~ 0,
+    "gd18_weight" ~ 18, 
+    ))
+```
+
+## Pivot wider
+
+```{r}
+analysis_df = 
+  tibble(group = c("treatment", "treatment", "control", "control"),
+         time = c("pre", "post", "pre", "post"),
+         mean =c("4", "10", "4.2", "5"))
+```
+
+Pivot wider for human readability
+
+```{r}
+analysis_df %>%
+  pivot_wider(
+    names_from = time,
+    values_from = mean
+  ) %>%
+  knitr::kable() #makes nice table
+```
+
+## Bind tables. 
+```{r}
+fellowship_ring <- 
+  read_excel("data_import_examples/LotR_Words.xlsx", range = "B3:D6") %>%
+  mutate(movie = "fellowship_ring") #add identifier variable 
+
+two_towers <- 
+  read_excel("data_import_examples/LotR_Words.xlsx", range = "F3:H6") %>%
+  mutate(movie = "two_towers")
+
+return_king <- 
+  read_excel("data_import_examples/LotR_Words.xlsx", range = "J3:L6") %>%
+  mutate(movie = "return_king") 
+
+lotr_df = 
+  bind_rows(fellowship_ring, two_towers, return_king) %>% #stacking on top of each other
+  janitor::clean_names() %>%
+  pivot_longer( #turning encoded variable names into actual variable representing sex
+    cols = female:male, 
+    names_to = "sex",
+    values_to = "words"
+  ) %>%
+  relocate(movie) %>% #move to the front 
+  mutate(race = str_to_lower(race)) #takes string variables to lowercase
+
+```
+
+
+## Join FAS datasets.
+
+Import 'litters' dataset.
+```{r}
+litters_df = 
+  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".", "")) %>%
+  janitor::clean_names() %>%
+  mutate(wt_gain = gd18_weight - gd0_weight) %>% #do these types of functions before you pivot wide or long or binding, etc. 
+  separate(
+    group, into = c("dose", "day_of_treatment"), sep = 3 #split group column by the third index
+  )
+```
+
+Import 'pups' dataset, next!
+```{r}
+pups_df = 
+  read_csv("data_import_examples/FAS_pups.csv", na = c("NA", ".", "")) %>%
+  janitor::clean_names() %>%
+  mutate(sex = case_match(
+    sex, 
+    1 ~ "male",
+    2 ~ "female"
+  )
+  )
+  
+```
+
+Join the datasets! A good place to start if you don't know what type of join to perform is a full_join - it preserves everything. Another option is anti_join which can identify what the differences are between two datasets / what is missing. 
+
+```{r}
+fas_df = 
+  left_join(pups_df, litters_df, by = "litter_number") %>% #specify where to join, don't allow R to just do it automatically 
+  relocate(litter_number, dose, day_of_treatment)
+```
+
